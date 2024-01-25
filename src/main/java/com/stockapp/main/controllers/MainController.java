@@ -25,7 +25,7 @@ public class MainController {
     @GetMapping("/testing")
     public String test() {
     	
-    	System.out.println(test);
+    	//System.out.println(test);
     	
     	/**
          * La idea es crear DTOs para cada respuesta, entonces el objeto es creado de forma automática y podemos manejarlo al obtenerlo.
@@ -33,7 +33,7 @@ public class MainController {
          * Si hubieran errores en la deserialización, en el .bodyToMono(), se ataja con try-catch
          */
     	
-    	/*
+    	
     	Mono<OpenClose> response = webClient
 				.get()
 				//.uri("/v2/aggs/ticker/AAPL/range/1/day/2023-01-09/2023-01-09?adjusted=true&sort=desc&limit=120")
@@ -47,7 +47,7 @@ public class MainController {
 				.bodyToMono(OpenClose.class) //throws JsonProcessingException si pifiamos en el procesamiento en mi DTO
                                 .log();
                                 
-        */
+        
         /*
         response.subscribe(dto -> {
             System.out.println("RESPUESTA! : "+dto);
@@ -61,13 +61,13 @@ public class MainController {
                     },
                             err -> System.out.println("ERROR!!!! ::: "+err.getMessage())); //despues aca
     	*/
-    	/*
+    	
     	response.subscribe(
     			dto -> {
     				System.out.println("RESPUESTA! : "+dto);
     			},
     			err -> System.out.println("ERROR!!!! ::: "+err.getMessage())); //despues aca);
-    	*/
+    	
         return "Testing WebClient with API!";
     }
     

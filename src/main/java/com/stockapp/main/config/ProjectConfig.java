@@ -2,6 +2,7 @@ package com.stockapp.main.config;
 
 import javax.net.ssl.SSLException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +17,9 @@ import reactor.netty.http.client.HttpClient;
 @Configuration
 public class ProjectConfig {
 
+	@Value("${apikey.value}")
+	private String apikey;
+	
 	/**
      * La API permite solo 5 pedidos por minuto - Esta debilidad vamos a aprovecharla
      * Crearemos una funcionalidad donde se lleve constantemente un control de la cantidad de pedidos a la api, en particular cuando el usuario interactua.
@@ -47,7 +51,7 @@ public class ProjectConfig {
         HttpClient httpClient = HttpClient.create().secure(t -> t.sslContext(sslContext));
         return WebClient.builder()
                 .baseUrl("https://api.polygon.io") //https://polygon.io/
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer ") //
+                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer "+apikey) 
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();
     }
