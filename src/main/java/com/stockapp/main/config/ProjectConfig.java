@@ -47,7 +47,7 @@ public class ProjectConfig {
         HttpClient httpClient = HttpClient.create().secure(t -> t.sslContext(sslContext));
         return WebClient.builder()
                 .baseUrl("https://api.polygon.io") //https://polygon.io/
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer W4pZlgIpUhW9DQLkaNlO_FHqm1zuDa75") //inmastockapp16
+                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer ") //
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();
     }
