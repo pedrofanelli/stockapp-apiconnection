@@ -1,10 +1,172 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Start Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <link rel="stylesheet" type="text/css" href="https://code.highcharts.com/css/stocktools/gui.css">
+        <link rel="stylesheet" type="text/css" href="https://code.highcharts.com/css/annotations/popup.css">
+        <script src="https://code.highcharts.com/stock/highstock.js"></script>
+        <script src="https://code.highcharts.com/stock/indicators/indicators-all.js"></script>
+        <script src="https://code.highcharts.com/stock/modules/drag-panes.js"></script>
+        <script src="https://code.highcharts.com/modules/annotations-advanced.js"></script>
+        <script src="https://code.highcharts.com/modules/price-indicator.js"></script>
+        <script src="https://code.highcharts.com/modules/full-screen.js"></script>
+        <script src="https://code.highcharts.com/modules/stock-tools.js"></script>
+        <script src="https://code.highcharts.com/stock/modules/heikinashi.js"></script>
+        <script src="https://code.highcharts.com/stock/modules/hollowcandlestick.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        
+        
+        
+        
+        <script th:inline="javascript">
+       
+           
+           var val = [[${listadito}]];
+           
+           /*
+           var data = []; 
+           
+           for (i=0;i<val.length;i++) {
+               var obj = val[i];
+               var innerArr = [];
+               innerArr.push(obj.t);
+               innerArr.push(obj.o);
+               innerArr.push(obj.h);
+               innerArr.push(obj.l);
+               innerArr.push(obj.c);
+               innerArr.push(obj.v);
+               data.push(innerArr);
+           }
+          */
+         
+        var data = [ 
+         
+         
+         [# th:each="data : ${listadito}"]
+            [
+                [[${data.t}]],
+                [[${data.o}]],
+                [[${data.h}]],
+                [[${data.l}]],
+                [[${data.c}]],
+                [[${data.v}]]
+            ],
+         [/]
+         
+         ];   
+            // split the data set into ohlc and volume
+            const ohlc = [],
+                volume = [],
+                dataLength = data.length;
 
-</body>
+            for (let i = 0; i < dataLength; i += 1) {
+                ohlc.push([
+                    data[i][0], // the date
+                    data[i][1], // open
+                    data[i][2], // high
+                    data[i][3], // low
+                    data[i][4] // close
+                ]);
+
+                volume.push([
+                    data[i][0], // the date
+                    data[i][5] // the volume
+                ]);
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+            const chart = Highcharts.stockChart('container', {
+                yAxis: [{
+                    labels: {
+                        align: 'left'
+                    },
+                    height: '80%',
+                    resize: {
+                        enabled: true
+                    }
+                }, {
+                    labels: {
+                        align: 'left'
+                    },
+                    top: '80%',
+                    height: '20%',
+                    offset: 0
+                }],
+                tooltip: {
+                    shape: 'square',
+                    headerShape: 'callout',
+                    borderWidth: 0,
+                    shadow: false,
+                    positioner: function (width, height, point) {
+                        const chart = this.chart;
+                        let position;
+
+                        if (point.isHeader) {
+                            position = {
+                                x: Math.max(
+                                    // Left side limit
+                                    chart.plotLeft,
+                                    Math.min(
+                                        point.plotX + chart.plotLeft - width / 2,
+                                        // Right side limit
+                                        chart.chartWidth - width - chart.marginRight
+                                    )
+                                ),
+                                y: point.plotY
+                            };
+                        } else {
+                            position = {
+                                x: point.series.chart.plotLeft,
+                                y: point.series.yAxis.top - chart.plotTop
+                            };
+                        }
+
+                        return position;
+                    }
+                },
+                series: [{
+                    type: 'ohlc',
+                    id: 'aapl-ohlc',
+                    name: 'AAPL Stock Price',
+                    data: ohlc
+                }, {
+                    type: 'column',
+                    id: 'aapl-volume',
+                    name: 'AAPL Volume',
+                    data: volume,
+                    yAxis: 1
+                }],
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 800
+                        },
+                        chartOptions: {
+                            rangeSelector: {
+                                inputEnabled: false
+                            }
+                        }
+                    }]
+                }
+            });
+        });
+        
+        </script>
+        
+        
+        
+        
+    </head>
+    <body>
+        <h1>Hello World!</h1>
+        
+        <p th:text="'Hello, ' + ${name} + '!'"></p>
+        
+        
+        
+        <div id="container" class="chart" style="width:100%; height:400px;"></div>
+        <div id="container2" style="width:100%; height:400px;"></div>
+    </body>
 </html>

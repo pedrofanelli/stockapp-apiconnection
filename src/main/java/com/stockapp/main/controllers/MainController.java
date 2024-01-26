@@ -1,19 +1,24 @@
 package com.stockapp.main.controllers;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+import com.stockapp.main.DTOs.Aggregates;
 import com.stockapp.main.DTOs.OpenClose;
 
 import reactor.core.publisher.Mono;
 
-@RestController
+@Controller
 public class MainController {
 
 	@Autowired
@@ -22,6 +27,41 @@ public class MainController {
 	@Value("${test.test}")
 	private String test;
     
+	@GetMapping("/graph")
+	public String graph(Model model) {
+		
+		//[1643121000000,158.98,162.76,157.02,159.78,115798400]
+        // DATE - OPEN - HIGH - LOW - CLOSE - VOLUME
+        
+        ArrayList<Aggregates> listado = new ArrayList<>();
+        
+        Aggregates response = webClient
+				.get()
+				.uri("/v2/aggs/ticker/AAPL/range/1/day/2023-01-25/2024-01-25?adjusted=true&sort=asc")
+				.retrieve()
+                                .onStatus(status -> status.is4xxClientError(), clientResponse -> handleClientError(clientResponse))
+                                .onStatus(status -> status.is5xxServerError(), serverResponse -> handleServerError(serverResponse))
+                                //.onStatus(HttpStatus::isError, clientResponse -> handleAnyError(clientResponse))
+				.bodyToMono(Aggregates.class) //throws JsonProcessingException si pifiamos en el procesamiento en mi DTO
+                                .block();
+        
+        /*
+        response.subscribe(dto -> {
+            System.out.println("RESPUESTA! : "+dto);
+            listado.add(dto);
+                    },
+            err -> System.out.println("ERROR!!!! ::: "+err.getMessage()));
+        */
+        
+        
+        
+        
+        model.addAttribute("listadito", response.getResults());
+        model.addAttribute("name", "Peterrrr");
+		
+		return "Graph";
+	}
+	
     @GetMapping("/testing")
     public String test() {
     	
