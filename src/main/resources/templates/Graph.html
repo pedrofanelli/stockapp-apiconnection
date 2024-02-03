@@ -22,7 +22,9 @@
         
         <script th:inline="javascript">
        
-           
+        let chart;   
+        
+        
            var val = [[${listadito}]];
            
            /*
@@ -75,9 +77,51 @@
                     data[i][5] // the volume
                 ]);
             }
+            
+            
+            const pruebita = [1674536400000, 100, 102, 98, 101, 60800355];
+            
+            //ohlc.unshift([pruebita[0],pruebita[1],pruebita[2],pruebita[3],pruebita[4]]);
+            
+            //volume.unshift([pruebita[0],pruebita[5]]);
+            
+            
 
+            console.log(ohlc[0]);
+            console.log(volume[0]);
+            
+            console.log(ohlc[ohlc.length-1]);
+            console.log(volume[volume.length-1]);
+            
+            
             document.addEventListener('DOMContentLoaded', function() {
-            const chart = Highcharts.stockChart('container', {
+
+            	console.log("comeinzo content loaded");
+            	
+            chart = Highcharts.stockChart('container', {
+				
+				chart: {
+					events: {
+	                    load: function () {
+	                        console.log("Chart rendered");
+	                        
+	                        
+							
+	                        let seriesOhlc = this.series[0];
+	                        let seriesVolu = this.series[1];
+
+	                        setInterval(function () {
+								console.log("intervaloooo");
+	                            let newOhlcPoint = [1674536400000, 100, 102, 98, 101];
+	                            let newVolumePoint = [1674536400000, 60800355];
+
+	                            seriesOhlc.addPoint({data:newOhlcPoint}, true, true);
+	                            seriesVolu.addPoint({data:newVolumePoint}, true, true);
+	                        }, 2000);
+	                    }
+	                }
+				},
+            		
                 yAxis: [{
                     labels: {
                         align: 'left'
@@ -149,9 +193,159 @@
                             }
                         }
                     }]
-                }
+                },
+                
+                /*
+                events: {
+                	  load: function() {
+                		  console.log("insideeeee");
+                		  const chart = this.chart;
+                	    var seriesOhlc = chart.series[0];
+                	    var seriesVolu = chart.series[1];
+                	    console.log(seriesOhlc);
+                	    setInterval(function() {
+                	      
+                	      seriesOhlc.setData({
+                	        data: [1674536400000, 100, 102, 98, 101]
+                	      }, true);
+                	      seriesVolu.update({
+                	    	data: [1674536400000, 60800355]
+                          }, true);
+                	    }, 10000);
+                	  }
+                	}   */
+                	
+                	
+                	
+                	
+                	
             });
+            
+            
+            
+            
+            
         });
+            
+            
+            
+            
+            
+            
+            let eventSource = new EventSource('http://localhost:8085/emitter');
+
+            let count = 0;
+            eventSource.onmessage = (event) => {
+                // Handle incoming events from the server
+                
+                var seriesOhlc = chart.series[0];
+                var seriesVolu = chart.series[1];
+                
+                //console.log(chart);
+                
+                //console.log(seriesOhlc);
+                shift = seriesOhlc.data.length > 20;
+                shift2 = seriesVolu.data.length > 20;
+                //if (count === 0) {
+                	seriesOhlc.addPoint([1674536400000, 100, 102, 98, 101], true, shift);
+            	    seriesVolu.addPoint([1674536400000, 60800355], true, shift2);
+                //} else {
+                	seriesOhlc.addPoint([1674450000000, 120, 122, 115, 121], true, shift);
+            	    seriesVolu.addPoint([1674450000000, 60800355], true, shift2);
+                //}
+                
+                
+        	    
+                
+                let eventData = event.data;
+                    let dataArray = JSON.parse(eventData);
+                    
+                    console.log('Received data: ');
+                    //console.log(dataArray);
+                    
+                    //agregar
+                    //console.log(pruebita);
+                    //ohlc.unshift([pruebita[0],pruebita[1],pruebita[2],pruebita[3],pruebita[4]]);
+                    //volume.unshift([pruebita[0],pruebita[5]]);
+                    
+            };
+            eventSource.onopen = (event) => {
+              console.log("EVENT SOURCE ABIERTO!"+event.data);  
+            };
+            
+            eventSource.onerror = (event) => {
+              
+                // Handle errors and attempt to reconnect
+                console.error('Error occurred:', event);
+                eventSource.close();  // Close the current connection
+
+                // Attempt to reconnect after a delay (e.g., 5 seconds)
+                setTimeout(createEventSource(), 5000);
+              
+            };
+            
+            /*
+             * De esta forma tengo un loop infinito, donde estará esperando info del emitter, y si sucede un timeout porque no se recibió info,
+             * se cierra el existente y se crea uno nuevo, hasta que responda seguirá así.
+             * Yo podria actualizar el backend, o cerrarlo, y sin actualizar el frontend, veria cambios. Por ejemplo, si el backend no responde, tiraría
+             * error al toque, y se ejecutaria el evento de error, cada 5 segundos, intentando nuevamente, en un loop infinito.
+             * Si yo levantara nuevamente el backend, entraria en el timeout cada 30 segundos. Copado!
+             */
+            
+            function createEventSource() {
+                
+                console.log("ATTEMPTING TO CONNECT...");
+                
+                let eventSource = new EventSource('http://localhost:8085/emitter');
+
+                let count = 0;
+                eventSource.onmessage = (event) => {
+                    // Handle incoming events from the server
+                	let eventData = event.data;
+                    let dataArray = JSON.parse(eventData);
+                    
+                    console.log('Received data: ');
+                    console.log(dataArray);
+                    
+                    console.log(pruebita);
+					//agregar
+                    
+                    ohlc.unshift([pruebita[0],pruebita[1],pruebita[2],pruebita[3],pruebita[4]]);
+                    volume.unshift([pruebita[0],pruebita[5]]);
+                    
+                    var seriesOhlc = chart.series[0];
+                    var seriesVolu = chart.series[1];
+                    
+                    //console.log(chart);
+                    
+                    //console.log(seriesOhlc);
+                    shift = seriesOhlc.data.length > 20;
+                    shift2 = seriesVolu.data.length > 20;
+                    //if (count === 0) {
+                    	seriesOhlc.addPoint([1674536400000, 100, 102, 98, 101], true, shift);
+                	    seriesVolu.addPoint([1674536400000, 60800355], true, shift2);
+                    
+                };
+                eventSource.onopen = (event) => {
+                  console.log("EVENT SOURCE ABIERTO!"+event.data);  
+                };
+
+                eventSource.onerror = (event) => {
+                    
+                    // Handle errors and attempt to reconnect
+                    console.error('Error occurred:', event);
+                    eventSource.close();  // Close the current connection
+
+                    // Attempt to reconnect after a delay (e.g., 5 seconds)
+                    setTimeout(createEventSource(), 5000);
+
+                };
+                
+            }
+            // Close the connection when needed
+            //eventSource.close();
+            
+            
         
         </script>
         
