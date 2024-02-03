@@ -48,6 +48,7 @@ public class SSEController {
 	}
  
 	
+	
 	@GetMapping("/generardatos/emitter1")
     public ResponseEntity<String> evento1() {
         

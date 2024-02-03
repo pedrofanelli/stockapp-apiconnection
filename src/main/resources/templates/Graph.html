@@ -185,11 +185,11 @@
                 responsive: {
                     rules: [{
                         condition: {
-                            maxWidth: 800
+                            maxWidth: 1000
                         },
                         chartOptions: {
                             rangeSelector: {
-                                inputEnabled: false
+                                inputEnabled: true
                             }
                         }
                     }]
@@ -246,13 +246,13 @@
                 //console.log(seriesOhlc);
                 shift = seriesOhlc.data.length > 20;
                 shift2 = seriesVolu.data.length > 20;
-                //if (count === 0) {
-                	seriesOhlc.addPoint([1674536400000, 100, 102, 98, 101], true, shift);
-            	    seriesVolu.addPoint([1674536400000, 60800355], true, shift2);
-                //} else {
+                if (count === 0) {
+                	seriesOhlc.addPoint([1706302800000, 100, 102, 98, 101], true, shift);
+            	    seriesVolu.addPoint([1706302800000, 60800355], true, shift2);
+                } else {
                 	seriesOhlc.addPoint([1674450000000, 120, 122, 115, 121], true, shift);
             	    seriesVolu.addPoint([1674450000000, 60800355], true, shift2);
-                //}
+                }
                 
                 
         	    
