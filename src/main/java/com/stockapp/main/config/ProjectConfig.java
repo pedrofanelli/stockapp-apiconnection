@@ -1,5 +1,8 @@
 package com.stockapp.main.config;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import javax.net.ssl.SSLException;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
+
 
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -55,4 +59,19 @@ public class ProjectConfig {
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();
     }
+    
+    
+    @Bean
+	Supplier<String> producerBinding() {
+		return () -> {
+			
+			return "new data";
+		};
+	}
+
+    @Bean
+    Consumer<String> consumerBinding() {
+		return s -> System.out.println("Data Consumed :: " + s.toUpperCase());
+	}
+    
 }
