@@ -1,17 +1,31 @@
 package com.stockapp.main.config;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.net.ssl.SSLException;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.converter.StringJsonMessageConverter;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.stockapp.main.DTOs.AggregatesResult;
 
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -62,16 +76,24 @@ public class ProjectConfig {
     
     
     @Bean
-	Supplier<String> producerBinding() {
+	Supplier<AggregatesResult> producerBinding() {
 		return () -> {
-			
-			return "new data";
+			AggregatesResult data = new AggregatesResult();
+			data.setC(34.6f);
+			data.setH(123123);
+			data.setL(333333);
+			data.setN(777777);
+			data.setO(0);
+			data.setT(11111);
+			data.setV(5);
+			data.setVw(6.8f);
+			return data;
 		};
 	}
 
     @Bean
-    Consumer<String> consumerBinding() {
-		return s -> System.out.println("Data Consumed :: " + s.toUpperCase());
+    Consumer<AggregatesResult> consumerBinding() {
+		return s -> System.out.println("Data Consumed :: " + s);
 	}
     
 }
