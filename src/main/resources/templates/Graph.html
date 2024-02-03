@@ -99,7 +99,7 @@
             	console.log("comeinzo content loaded");
             	
             chart = Highcharts.stockChart('container', {
-				
+				/*
 				chart: {
 					events: {
 	                    load: function () {
@@ -120,7 +120,9 @@
 	                        }, 2000);
 	                    }
 	                }
-				},
+				},*/
+				
+				
             		
                 yAxis: [{
                     labels: {
@@ -234,39 +236,26 @@
             
             let eventSource = new EventSource('http://localhost:8085/emitter');
 
-            let count = 0;
             eventSource.onmessage = (event) => {
-                // Handle incoming events from the server
+                // Handle incoming events from the server                
+                
+                let eventData = event.data;
+                let dataArray = JSON.parse(eventData);
+                
                 
                 var seriesOhlc = chart.series[0];
                 var seriesVolu = chart.series[1];
                 
-                //console.log(chart);
-                
-                //console.log(seriesOhlc);
                 shift = seriesOhlc.data.length > 20;
                 shift2 = seriesVolu.data.length > 20;
-                if (count === 0) {
-                	seriesOhlc.addPoint([1706302800000, 100, 102, 98, 101], true, shift);
-            	    seriesVolu.addPoint([1706302800000, 60800355], true, shift2);
-                } else {
-                	seriesOhlc.addPoint([1674450000000, 120, 122, 115, 121], true, shift);
-            	    seriesVolu.addPoint([1674450000000, 60800355], true, shift2);
-                }
                 
-                
+                seriesOhlc.addPoint([dataArray.t, dataArray.o, dataArray.h, dataArray.l, dataArray.c], true, shift);
+                seriesVolu.addPoint([dataArray.t, dataArray.v], true, shift2);                               
         	    
                 
-                let eventData = event.data;
-                    let dataArray = JSON.parse(eventData);
+                
                     
-                    console.log('Received data: ');
-                    //console.log(dataArray);
                     
-                    //agregar
-                    //console.log(pruebita);
-                    //ohlc.unshift([pruebita[0],pruebita[1],pruebita[2],pruebita[3],pruebita[4]]);
-                    //volume.unshift([pruebita[0],pruebita[5]]);
                     
             };
             eventSource.onopen = (event) => {
@@ -301,29 +290,19 @@
                 let count = 0;
                 eventSource.onmessage = (event) => {
                     // Handle incoming events from the server
+                	
                 	let eventData = event.data;
                     let dataArray = JSON.parse(eventData);
                     
-                    console.log('Received data: ');
-                    console.log(dataArray);
-                    
-                    console.log(pruebita);
-					//agregar
-                    
-                    ohlc.unshift([pruebita[0],pruebita[1],pruebita[2],pruebita[3],pruebita[4]]);
-                    volume.unshift([pruebita[0],pruebita[5]]);
                     
                     var seriesOhlc = chart.series[0];
                     var seriesVolu = chart.series[1];
                     
-                    //console.log(chart);
-                    
-                    //console.log(seriesOhlc);
                     shift = seriesOhlc.data.length > 20;
                     shift2 = seriesVolu.data.length > 20;
-                    //if (count === 0) {
-                    	seriesOhlc.addPoint([1674536400000, 100, 102, 98, 101], true, shift);
-                	    seriesVolu.addPoint([1674536400000, 60800355], true, shift2);
+                    
+                    seriesOhlc.addPoint([dataArray.t, dataArray.o, dataArray.h, dataArray.l, dataArray.c], true, shift);
+                    seriesVolu.addPoint([dataArray.t, dataArray.v], true, shift2);
                     
                 };
                 eventSource.onopen = (event) => {
