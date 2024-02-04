@@ -101,10 +101,14 @@ public class ProjectConfig {
 			if (EmittersContainer.getAggResultsArr().isEmpty()) {
 				return null;
 			} else {
-				AtomicInteger index = EmittersContainer.getIntAtomico();
-				AggregatesResult data = EmittersContainer.getAggResults(index.incrementAndGet());
-				EmittersContainer.setAggresultsarrbuilding(data);
-				return data;
+				int index = EmittersContainer.getIntAtomico().incrementAndGet();
+				if (index < EmittersContainer.getAggResultsArr().size()) {
+					AggregatesResult data = EmittersContainer.getAggResults(index);
+					EmittersContainer.setAggresultsarrbuilding(data);
+					return data;
+				} else {
+					return null;
+				}
 			}
 			
 		};

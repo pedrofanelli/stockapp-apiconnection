@@ -121,7 +121,16 @@
 	                    }
 	                }
 				},*/
-				
+				rangeSelector: {
+		            selected: 4
+		        },
+				xAxis: {
+				    
+				    
+					type: 'datetime',
+					min: new Date('2023/01/24').getTime(),
+			        max: new Date('2024/01/26').getTime(),
+				  },
 				
             		
                 yAxis: [{
@@ -191,7 +200,7 @@
                         },
                         chartOptions: {
                             rangeSelector: {
-                                inputEnabled: true
+                                inputEnabled: false
                             }
                         }
                     }]
