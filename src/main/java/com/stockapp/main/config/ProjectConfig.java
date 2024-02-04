@@ -1,7 +1,10 @@
 package com.stockapp.main.config;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -24,8 +27,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.converter.StringJsonMessageConverter;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.stockapp.main.DTOs.AggregatesResult;
+import com.stockapp.main.utils.EmittersContainer;
 
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -78,6 +83,7 @@ public class ProjectConfig {
     @Bean
 	Supplier<AggregatesResult> producerBinding() {
 		return () -> {
+			/*
 			AggregatesResult data = new AggregatesResult();
 			data.setC(34.6f);
 			data.setH(123123);
@@ -88,12 +94,43 @@ public class ProjectConfig {
 			data.setV(5);
 			data.setVw(6.8f);
 			return data;
+			*/
+			
+			//Optional.ofNullable(null);
+			
+			if (EmittersContainer.getAggResultsArr().isEmpty()) {
+				return null;
+			} else {
+				AtomicInteger index = EmittersContainer.getIntAtomico();
+				AggregatesResult data = EmittersContainer.getAggResults(index.incrementAndGet());
+				EmittersContainer.setAggresultsarrbuilding(data);
+				return data;
+			}
+			
 		};
 	}
 
     @Bean
     Consumer<AggregatesResult> consumerBinding() {
-		return s -> System.out.println("Data Consumed :: " + s);
+		//return s -> System.out.println("Data Consumed :: " + s);
+    	
+    	return agg -> {
+    		if (agg != null) {
+    			
+    			EmittersContainer.getEmitters().forEach(emitter -> {
+        			try {
+    					emitter.send(SseEmitter.event().data(agg));
+    				} catch (IOException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+        		});
+    			
+    		}
+    		
+    		
+    	};
+    	
 	}
     
 }

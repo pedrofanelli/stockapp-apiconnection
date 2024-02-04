@@ -1,10 +1,13 @@
 package com.stockapp.main.controllers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,17 +20,23 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.stockapp.main.DTOs.Aggregates;
 import com.stockapp.main.DTOs.AggregatesResult;
+import com.stockapp.main.utils.EmittersContainer;
 
 import reactor.core.publisher.Mono;
 
 @Controller
 public class SSEController {
 
-	private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
+	private static final Logger logger = LoggerFactory.getLogger(SSEController.class);
+	
+	//@Autowired
+	//EmittersContainer emittersContainer;
+	
+	//private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 	    
-    private AtomicInteger intAtomico = new AtomicInteger(0);
+    //private AtomicInteger intAtomico = new AtomicInteger(0);
     
-    private AggregatesResult[] arrResults;
+    //private AggregatesResult[] arrResults;
 	
 	@Autowired
     WebClient webClient;
@@ -52,26 +61,46 @@ public class SSEController {
 		//[1643121000000,158.98,162.76,157.02,159.78,115798400]
         // DATE - OPEN - HIGH - LOW - CLOSE - VOLUME
         
-        ArrayList<Aggregates> listado = new ArrayList<>();
+        //ArrayList<Aggregates> listado = new ArrayList<>();
+		
+		List<AggregatesResult> lista = new ArrayList<>();
+		
+		if (EmittersContainer.getAggResultsArr().isEmpty()) {
+			
+			logger.info("array contenedor VACIO!!!");
+			
+			Aggregates response = webClient
+					.get()
+					.uri("/v2/aggs/ticker/AAPL/range/1/day/2023-01-25/2024-01-25?adjusted=true&sort=asc")
+					.retrieve()
+                    .onStatus(status -> status.is4xxClientError(), clientResponse -> handleClientError(clientResponse))
+                    .onStatus(status -> status.is5xxServerError(), serverResponse -> handleServerError(serverResponse))
+                    //.onStatus(HttpStatus::isError, clientResponse -> handleAnyError(clientResponse))
+                    .bodyToMono(Aggregates.class) //throws JsonProcessingException si pifiamos en el procesamiento en mi DTO
+                    .block();
+			
+			
+				
+			List<AggregatesResult> listado = Arrays.asList(response.getResults());
+			
+			EmittersContainer.setAllAggResult(listado);
+			
+			lista.add(listado.get(0));
+							
+		} else {
+			
+			logger.info("array contenedor CON DATAAAA!!!");
+			
+			lista = EmittersContainer.getAggresultsarrbuilding();
+			
+		}
         
-        Aggregates response = webClient
-								.get()
-								.uri("/v2/aggs/ticker/AAPL/range/1/day/2023-01-25/2024-01-25?adjusted=true&sort=asc")
-								.retrieve()
-                                .onStatus(status -> status.is4xxClientError(), clientResponse -> handleClientError(clientResponse))
-                                .onStatus(status -> status.is5xxServerError(), serverResponse -> handleServerError(serverResponse))
-                                //.onStatus(HttpStatus::isError, clientResponse -> handleAnyError(clientResponse))
-                                .bodyToMono(Aggregates.class) //throws JsonProcessingException si pifiamos en el procesamiento en mi DTO
-                                .block();
         
-        
-        this.arrResults = response.getResults();
-        
-        AggregatesResult inicial = this.arrResults[this.intAtomico.intValue()];
+        //AggregatesResult inicial = EmittersContainer.getAggResults(this.intAtomico.intValue());
         
         //this.intAtomico.incrementAndGet();
         
-        model.addAttribute("listadito", List.of(inicial));
+        model.addAttribute("listadito", lista);
         
         
         
@@ -88,26 +117,26 @@ public class SSEController {
 	SseEmitter getEmitter() {
 		
 		System.out.println("ADENTRO DE SSE!!!");
-        System.out.println("TAMANIO DE ARRAY DE EMITERS: "+emitters.size());
+        System.out.println("TAMANIO DE ARRAY DE EMITERS: "+EmittersContainer.getEmitters().size());
 		
 		SseEmitter emitter = new SseEmitter(-1L);
         
         
         // Add the emitter to the list for tracking
-        emitters.add(emitter);
+        EmittersContainer.setEmitter(emitter);
 
         // Set a timeout handler for the emitter
         emitter.onTimeout(() -> {
             // Remove the emitter from the list when the connection times out
             System.out.println("TIMEOUT DE EMITTER");
-            emitters.remove(emitter);
+            EmittersContainer.removeEmitter(emitter);
         });
 
         // Set a completion handler for the emitter
         emitter.onCompletion(() -> {
             // Remove the emitter from the list when the connection is completed
             System.out.println("COMPLETION DEL EMITTER");
-            emitters.remove(emitter);
+            EmittersContainer.removeEmitter(emitter);
         });
 
         // Logic to manage the connection and send events
@@ -119,7 +148,7 @@ public class SSEController {
 	}
  
 	
-	
+	/*
 	@GetMapping("/generardatos/emitter1")
     public ResponseEntity<String> evento1() {
         
@@ -153,4 +182,5 @@ public class SSEController {
         
         return ResponseEntity.ok("Todo salio perfecto en la generacion de datos del Emitter 1");
     }
+    */
 }
