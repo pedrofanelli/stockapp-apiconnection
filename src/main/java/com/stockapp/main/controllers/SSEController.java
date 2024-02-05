@@ -113,6 +113,19 @@ public class SSEController {
 	
 	
 	
+	/**
+	 * Tendría que generar CustomEmitters, dependiendo del ticker seleccionado, dando info live de ese ticker
+	 * Es decir, habrá 1 tipo de emitter por ticker. Luego podrán haber varios emitters del mismo tipo, para varios clientes.
+	 * Luego, Kafka va a loopear por 'almacenes de datos', habrá un almacen por ticker.
+	 * Si esta vacio significa que ningun usuario pidio info live.
+	 * Si tiene datos, devolverá el primero segun index, misma lógica de ahora.
+	 * El objeto que devolverá será un hashMap, key=ticker value=agg
+	 * El consumer recibirá la info en otro microservicio.
+	 * Loopeará los emitters, en función del tipo de emitter (=ticker) proveerá datos nuevos o no.
+	 * 
+	 * 
+	 * @return
+	 */
 	@GetMapping("/emitter")
 	SseEmitter getEmitter() {
 		

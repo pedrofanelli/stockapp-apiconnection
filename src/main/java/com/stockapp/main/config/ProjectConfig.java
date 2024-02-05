@@ -80,6 +80,7 @@ public class ProjectConfig {
     }
     
     
+    
     @Bean
 	Supplier<AggregatesResult> producerBinding() {
 		return () -> {
@@ -124,9 +125,10 @@ public class ProjectConfig {
     			EmittersContainer.getEmitters().forEach(emitter -> {
         			try {
     					emitter.send(SseEmitter.event().data(agg));
-    				} catch (IOException e) {
+    				} catch (Exception e) {
     					// TODO Auto-generated catch block
-    					e.printStackTrace();
+    					//e.printStackTrace();
+    					System.out.println(e.getMessage());
     				}
         		});
     			
