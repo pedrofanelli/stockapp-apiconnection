@@ -84,20 +84,6 @@ public class ProjectConfig {
     @Bean
 	Supplier<AggregatesResult> producerBinding() {
 		return () -> {
-			/*
-			AggregatesResult data = new AggregatesResult();
-			data.setC(34.6f);
-			data.setH(123123);
-			data.setL(333333);
-			data.setN(777777);
-			data.setO(0);
-			data.setT(11111);
-			data.setV(5);
-			data.setVw(6.8f);
-			return data;
-			*/
-			
-			//Optional.ofNullable(null);
 			
 			if (EmittersContainer.getAggResultsArr().isEmpty()) {
 				return null;

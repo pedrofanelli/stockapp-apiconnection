@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -55,13 +56,9 @@ public class SSEController {
             return Mono.error(new Exception("SOY LA EXCEPCION de server: "+serverResponse.statusCode()));
         }
 	
-	@GetMapping("/livegraph")
-	public String graph(Model model) {
+	@GetMapping("/livegraph/{ticker}")
+	public String graph(@PathVariable String ticker, Model model) {
 		
-		//[1643121000000,158.98,162.76,157.02,159.78,115798400]
-        // DATE - OPEN - HIGH - LOW - CLOSE - VOLUME
-        
-        //ArrayList<Aggregates> listado = new ArrayList<>();
 		
 		List<AggregatesResult> lista = new ArrayList<>();
 		
