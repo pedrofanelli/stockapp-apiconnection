@@ -79,7 +79,7 @@ public class ProjectConfig {
                 .build();
     }
     
-    
+    /*
     
     @Bean
 	Supplier<AggregatesResult> producerBinding() {
@@ -124,5 +124,5 @@ public class ProjectConfig {
     	};
     	
 	}
-    
+    */
 }
