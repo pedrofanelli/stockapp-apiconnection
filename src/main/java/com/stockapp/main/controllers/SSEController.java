@@ -57,8 +57,9 @@ public class SSEController {
         }
 	
 	@GetMapping("/livegraph/{ticker}")
-	public String graph(@PathVariable String ticker, Model model) {
+	public ResponseEntity<List<AggregatesResult>> graph(@PathVariable String ticker) {
 		
+		logger.info("el tickkkkker: "+ticker);
 		
 		List<AggregatesResult> lista = new ArrayList<>();
 		
@@ -97,15 +98,15 @@ public class SSEController {
         
         //this.intAtomico.incrementAndGet();
         
-        model.addAttribute("listadito", lista);
+        //model.addAttribute("listadito", lista);
         
         
-        
+        //System.out.println(lista.get(0));
         
         //model.addAttribute("listadito", response.getResults());
-        model.addAttribute("name", "Peterrrr");
+        //model.addAttribute("name", "Peterrrr");
 		
-		return "Graph";
+		return ResponseEntity.ok(lista);
 	}
 	
 	

@@ -82,12 +82,11 @@ public class ProjectConfig {
      
     
     @Bean
-	Supplier<String> producerBinding() {
+	Supplier<AggregatesResult> producerBinding() {
 		return () -> {
 			
-			/*
+			
 			if (EmittersContainer.getAggResultsArr().isEmpty()) {
-				System.out.println("andando");
 				return null;
 			} else {
 				int index = EmittersContainer.getIntAtomico().incrementAndGet();
@@ -99,19 +98,19 @@ public class ProjectConfig {
 					return null;
 				}
 			}
-			*/
 			
-			return "andando";
+			
+			
 			
 		};
 	}
 
     @Bean
-    Consumer<String> consumerBinding() {
+    Consumer<AggregatesResult> consumerBinding() {
 		//return s -> System.out.println("Data Consumed :: " + s);
     	
     	return agg -> {
-    		/*
+    		
     		if (agg != null) {
     			
     			EmittersContainer.getEmitters().forEach(emitter -> {
@@ -125,8 +124,8 @@ public class ProjectConfig {
         		});
     			
     		}
-    		*/
-    		System.out.println(agg);
+    		
+    		
     		
     	};
     	
