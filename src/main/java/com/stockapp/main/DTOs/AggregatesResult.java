@@ -134,4 +134,21 @@ public class AggregatesResult {
     public void setVw(float vw) {
         this.vw = vw;
     }
+    
+    public void setAllToEmpty() {
+    	this.c = -1;
+    	this.h = -1;
+    	this.l = -1;
+    	this.n = -1;
+    	this.o = -1;
+    	this.t = -1;
+    	this.v = -1;
+    	this.vw = -1;
+    }
+    public boolean isAllEmpty() {
+    	if (c == -1 && h == -1 && l == -1 && n == -1 && o == -1 && t == -1 && v == -1 && vw == -1) {
+    		return true;
+    	}
+    	return false;
+    }
 }

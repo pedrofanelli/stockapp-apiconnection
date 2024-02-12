@@ -90,10 +90,12 @@ public class ProjectConfig {
 		return () -> {
 			
 			System.out.println("PRIMER PASO EN KAFKA PRODUCER");
-			
+			AggregatesResult emptyData = new AggregatesResult();
+			emptyData.setAllToEmpty();
 			if (emittersContainer.getAggResultsArr().isEmpty()) {
 				System.out.println("ES NULL EL CONTENIDO, ENVIO NULL");
-				return null;
+				
+				return emptyData;
 			} else {
 				System.out.println("NO ES NULL");
 				int index = emittersContainer.getIntAtomico().incrementAndGet();
@@ -102,7 +104,7 @@ public class ProjectConfig {
 					emittersContainer.setAggresultsarrbuilding(data);
 					return data;
 				} else {
-					return null;
+					return emptyData;
 				}
 			}
 			
@@ -118,7 +120,7 @@ public class ProjectConfig {
     	
     	return agg -> {
     		
-    		if (agg != null) {
+    		if (agg != null && !agg.isAllEmpty()) {
     			System.out.println("ES DISTINTO DE NULL EN CONSUMERRRRR");
     			emittersContainer.getEmitters().forEach(emitter -> {
         			try {
