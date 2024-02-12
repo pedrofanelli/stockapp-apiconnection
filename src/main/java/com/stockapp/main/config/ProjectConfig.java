@@ -14,6 +14,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +43,9 @@ public class ProjectConfig {
 
 	@Value("${apikey.value}")
 	private String apikey;
+	
+	@Autowired
+	private EmittersContainer emittersContainer;
 	
 	/**
      * La API permite solo 5 pedidos por minuto - Esta debilidad vamos a aprovecharla
@@ -85,14 +89,17 @@ public class ProjectConfig {
 	Supplier<AggregatesResult> producerBinding() {
 		return () -> {
 			
+			System.out.println("PRIMER PASO EN KAFKA PRODUCER");
 			
-			if (EmittersContainer.getAggResultsArr().isEmpty()) {
+			if (emittersContainer.getAggResultsArr().isEmpty()) {
+				System.out.println("ES NULL EL CONTENIDO, ENVIO NULL");
 				return null;
 			} else {
-				int index = EmittersContainer.getIntAtomico().incrementAndGet();
-				if (index < EmittersContainer.getAggResultsArr().size()) {
-					AggregatesResult data = EmittersContainer.getAggResults(index);
-					EmittersContainer.setAggresultsarrbuilding(data);
+				System.out.println("NO ES NULL");
+				int index = emittersContainer.getIntAtomico().incrementAndGet();
+				if (index < emittersContainer.getAggResultsArr().size()) {
+					AggregatesResult data = emittersContainer.getAggResults(index);
+					emittersContainer.setAggresultsarrbuilding(data);
 					return data;
 				} else {
 					return null;
@@ -112,8 +119,8 @@ public class ProjectConfig {
     	return agg -> {
     		
     		if (agg != null) {
-    			
-    			EmittersContainer.getEmitters().forEach(emitter -> {
+    			System.out.println("ES DISTINTO DE NULL EN CONSUMERRRRR");
+    			emittersContainer.getEmitters().forEach(emitter -> {
         			try {
     					emitter.send(SseEmitter.event().data(agg));
     				} catch (Exception e) {
@@ -123,6 +130,8 @@ public class ProjectConfig {
     				}
         		});
     			
+    		} else {
+    			System.out.println("es null en consumerrrrr");
     		}
     		
     		

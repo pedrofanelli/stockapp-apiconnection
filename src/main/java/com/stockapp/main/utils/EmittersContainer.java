@@ -12,63 +12,63 @@ import com.stockapp.main.DTOs.AggregatesResult;
 @Component
 public class EmittersContainer {
 
-	private static final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
+	private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 	
-	private static final List<AggregatesResult> aggResultsArr = new CopyOnWriteArrayList<>();
+	private final List<AggregatesResult> aggResultsArr = new CopyOnWriteArrayList<>();
 	
-	private static final List<AggregatesResult> aggResultsArrBuilding = new CopyOnWriteArrayList<>();
+	private final List<AggregatesResult> aggResultsArrBuilding = new CopyOnWriteArrayList<>();
 
-	private static AtomicInteger intAtomico = new AtomicInteger(-1);
+	private AtomicInteger intAtomico = new AtomicInteger(-1);
 	
 	/**
 	 * @return the emitters
 	 */
-	public static List<SseEmitter> getEmitters() {
+	public List<SseEmitter> getEmitters() {
 		return emitters;
 	}
 	
-	public static void setEmitter(SseEmitter emitter) {
+	public void setEmitter(SseEmitter emitter) {
 		emitters.add(emitter);
 	}
 	
-	public static void removeEmitter(SseEmitter emitter) {
+	public void removeEmitter(SseEmitter emitter) {
 		emitters.remove(emitter);
 	}
 
 	/**
 	 * @return the aggresultsarr
 	 */
-	public static List<AggregatesResult> getAggResultsArr() {
+	public List<AggregatesResult> getAggResultsArr() {
 		return aggResultsArr;
 	}
 	
-	public static AggregatesResult getAggResults(int i) {
+	public AggregatesResult getAggResults(int i) {
 		return aggResultsArr.get(i);
 	}
 
-	public static void setAllAggResult(List<AggregatesResult> agg) {
+	public void setAllAggResult(List<AggregatesResult> agg) {
 		aggResultsArr.addAll(agg);
 	}
 	
 	/**
 	 * @return the intAtomico
 	 */
-	public static AtomicInteger getIntAtomico() {
+	public AtomicInteger getIntAtomico() {
 		return intAtomico;
 	}
 
 	/**
 	 * @param intAtomico the intAtomico to set
 	 */
-	public static void setIntAtomico(AtomicInteger intAtomico) {
-		EmittersContainer.intAtomico = intAtomico;
+	public void setIntAtomico(AtomicInteger intAtomico) {
+		intAtomico = intAtomico;
 	}
 
-	public static List<AggregatesResult> getAggresultsarrbuilding() {
+	public List<AggregatesResult> getAggresultsarrbuilding() {
 		return aggResultsArrBuilding;
 	}
 	
-	public static void setAggresultsarrbuilding(AggregatesResult agg) {
+	public void setAggresultsarrbuilding(AggregatesResult agg) {
 		aggResultsArrBuilding.add(agg);
 	}
 	

@@ -30,8 +30,8 @@ public class SSEController {
 
 	private static final Logger logger = LoggerFactory.getLogger(SSEController.class);
 	
-	//@Autowired
-	//EmittersContainer emittersContainer;
+	@Autowired
+	EmittersContainer emittersContainer;
 	
 	//private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 	    
@@ -63,7 +63,7 @@ public class SSEController {
 		
 		List<AggregatesResult> lista = new ArrayList<>();
 		
-		if (EmittersContainer.getAggResultsArr().isEmpty()) {
+		if (emittersContainer.getAggResultsArr().isEmpty()) {
 			
 			logger.info("array contenedor VACIO!!!");
 			
@@ -81,7 +81,7 @@ public class SSEController {
 				
 			List<AggregatesResult> listado = Arrays.asList(response.getResults());
 			
-			EmittersContainer.setAllAggResult(listado);
+			emittersContainer.setAllAggResult(listado);
 			
 			lista.add(listado.get(0));
 							
@@ -89,7 +89,7 @@ public class SSEController {
 			
 			logger.info("array contenedor CON DATAAAA!!!");
 			
-			lista = EmittersContainer.getAggresultsarrbuilding();
+			lista = emittersContainer.getAggresultsarrbuilding();
 			
 		}
         
@@ -128,26 +128,26 @@ public class SSEController {
 	SseEmitter getEmitter() {
 		
 		System.out.println("ADENTRO DE SSE!!!");
-        System.out.println("TAMANIO DE ARRAY DE EMITERS: "+EmittersContainer.getEmitters().size());
+        System.out.println("TAMANIO DE ARRAY DE EMITERS: "+emittersContainer.getEmitters().size());
 		
 		SseEmitter emitter = new SseEmitter(-1L);
         
         
         // Add the emitter to the list for tracking
-        EmittersContainer.setEmitter(emitter);
+        emittersContainer.setEmitter(emitter);
 
         // Set a timeout handler for the emitter
         emitter.onTimeout(() -> {
             // Remove the emitter from the list when the connection times out
             System.out.println("TIMEOUT DE EMITTER");
-            EmittersContainer.removeEmitter(emitter);
+            emittersContainer.removeEmitter(emitter);
         });
 
         // Set a completion handler for the emitter
         emitter.onCompletion(() -> {
             // Remove the emitter from the list when the connection is completed
             System.out.println("COMPLETION DEL EMITTER");
-            EmittersContainer.removeEmitter(emitter);
+            emittersContainer.removeEmitter(emitter);
         });
 
         // Logic to manage the connection and send events
