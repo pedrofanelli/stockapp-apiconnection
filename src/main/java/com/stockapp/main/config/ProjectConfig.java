@@ -84,6 +84,16 @@ public class ProjectConfig {
     }
     
      
+    /**
+     * Tendria que tener Emitters de un cierto ticker, y resultados de un cierto ticker
+     * Podría crear una clase que centralice a todos
+     * Esa clase tendra todos los arrays de emiters/resultados de cada ticker
+     * Podría hacer depender todo con parámetros que sea el nombre del ticker.
+     * Primero necesito un listado de tickers validos, y luego, desde el controller que recibe
+     * el pedido del front, analizará el parámetro, y lo usará para crear los arrays en esta 
+     * clase general
+     * @return
+     */
     
     @Bean
 	Supplier<AggregatesResult> producerBinding() {
