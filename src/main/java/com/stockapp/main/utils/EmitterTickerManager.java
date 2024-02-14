@@ -9,6 +9,13 @@ public class EmitterTickerManager {
 	@Autowired
 	EmitterTickerContainer container;
 	
+	@Autowired 
+	EmitterTickerFactory factory;
+	
+	public boolean isTickerAlreadyCreated(String ticker) {
+		return container.isEmitterTicker(ticker);
+	}
+	
 	
 	
 }

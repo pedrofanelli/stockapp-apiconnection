@@ -13,7 +13,7 @@ public class EmitterTickerContainer {
 	 */
 	private final Map<String,EmitterTicker> almacen = new HashMap<String,EmitterTicker>();
 	
-	public boolean existeEmitterTicker(String key) {
+	public boolean isEmitterTicker(String key) {
 		return almacen.containsKey(key);
 	}	
 	public EmitterTicker getEmitterTicker(String key) {
