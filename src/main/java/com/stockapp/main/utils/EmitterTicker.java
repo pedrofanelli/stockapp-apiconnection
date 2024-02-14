@@ -39,5 +39,33 @@ public class EmitterTicker {
 		}
 		return this.emitters.get(i);
 	}
+	public int getElementIndex() {
+		return this.elementIndex.get();
+	}
+	public void setIntAtomico(int val) {
+		this.elementIndex.set(val);
+	}
+	
+	public int getArrAggResultSize() {
+		return this.aggResultsArr.size();
+	}
+	public AggregatesResult getArrAggResultItem(int i) {
+		return aggResultsArr.get(i);
+	}
+	public void setAllArrAggResult(List<AggregatesResult> agg) {
+		aggResultsArr.addAll(agg);
+	}
+	
+	
+	public int getArrBuildingAggResultSize() {
+		return this.aggResultsArrBuilding.size();
+	}
+	public AggregatesResult getArrBuildingAggResultItem(int i) {
+		return this.aggResultsArrBuilding.get(i);
+	}
+	
+	public void setArrBuildingAggResultItem(AggregatesResult agg) {
+		this.aggResultsArrBuilding.add(agg);
+	}
 	
 }
