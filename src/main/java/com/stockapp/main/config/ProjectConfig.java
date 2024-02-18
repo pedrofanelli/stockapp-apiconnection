@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -159,13 +160,23 @@ public class ProjectConfig {
     
     
     @Bean
-    Consumer<AggregatesResult> consumerBinding() {
+    Consumer<ForKafka> consumerBinding() {
 		//return s -> System.out.println("Data Consumed :: " + s);
     	
-    	return agg -> {
+    	return forKafka -> {
     		
-    		if (agg != null && !agg.isAllEmpty()) {
-    			System.out.println("ES DISTINTO DE NULL EN CONSUMERRRRR");
+    		if (forKafka != null && !forKafka.isEmpty()) {
+    			
+    			Set<String> keys = forKafka.keySet();
+    			
+    			keys.forEach(key -> {
+    				
+    				AggregatesResult agg = forKafka.getAgg(key);
+    				
+    				emitterManager.sendDataToEmitters(key, agg);
+    				
+    			});
+    			
     			emittersContainer.getEmitters().forEach(emitter -> {
         			try {
     					emitter.send(SseEmitter.event().data(agg));
@@ -177,7 +188,7 @@ public class ProjectConfig {
         		});
     			
     		} else {
-    			System.out.println("es null en consumerrrrr");
+    			System.out.println("Se ha recibido un objeto vacío en Kafka Consumer");
     		}
     		
     	};

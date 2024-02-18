@@ -59,8 +59,21 @@ public class EmitterTickerManager {
 			
 			return data;
 		} else {
-			throw new Exception ("No hay datos para loopear :(");
+			throw new Exception("No hay datos para loopear :(");
 		}
+	}
+	
+	public void sendDataToEmitters(String ticker, AggregatesResult data) throws Exception {
+		
+		if (container.getAlmacenSize() > 0) {
+			
+			EmitterTicker emitterTicker = container.getEmitterTicker(ticker);
+			emitterTicker.loopEmittersAndSendData(data);
+			
+		} else {
+			throw new Exception("No hay datos");
+		}
+		
 	}
 	
 }

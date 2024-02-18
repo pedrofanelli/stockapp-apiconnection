@@ -2,6 +2,7 @@ package com.stockapp.main.DTOs;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class ForKafka {
 
@@ -11,8 +12,12 @@ public class ForKafka {
 		grupo.put(key, value);
 	}
 	
-	public Map<String,AggregatesResult> getMap () {
-		return grupo;
+	public Set<String> keySet() {
+        return grupo.keySet();
+    }
+	
+	public AggregatesResult getAgg(String key) {
+		return grupo.get(key);
 	}
 	
 	public boolean isEmpty() {

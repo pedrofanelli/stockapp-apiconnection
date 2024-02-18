@@ -39,6 +39,11 @@ public class EmitterTicker {
 		}
 		return this.emitters.get(i);
 	}
+	public void loopEmittersAndSendData(AggregatesResult data) {
+		
+		
+		
+	}
 	public int getAndIncrementElementIndex() {
 		return this.elementIndex.incrementAndGet();
 	}
