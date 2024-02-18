@@ -41,7 +41,17 @@ public class EmitterTicker {
 	}
 	public void loopEmittersAndSendData(AggregatesResult data) {
 		
-		
+		emitters.forEach(emitter -> {
+			
+			try {
+				emitter.send(SseEmitter.event().data(data));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+				System.out.println("Error mandando data al emitter: "+e.getMessage());
+			}
+			
+		});
 		
 	}
 	public int getAndIncrementElementIndex() {

@@ -124,7 +124,9 @@ public class ProjectConfig {
 			
 			} catch (Exception e) {
 				System.out.println("Ha ocurrido un error en Kafka Producer: "+e.getMessage());
+				return new ForKafka();
 			}
+			
 			
 		};
 	}
@@ -171,21 +173,17 @@ public class ProjectConfig {
     			
     			keys.forEach(key -> {
     				
-    				AggregatesResult agg = forKafka.getAgg(key);
-    				
-    				emitterManager.sendDataToEmitters(key, agg);
+    				try {
+    					
+    					AggregatesResult agg = forKafka.getAgg(key);
+        				
+        				emitterManager.sendDataToEmitters(key, agg);
+    					
+    				} catch (Exception e) {
+    					System.out.println("Error mandando data al emitter en Kafka Consumer: "+e.getMessage());
+    				}
     				
     			});
-    			
-    			emittersContainer.getEmitters().forEach(emitter -> {
-        			try {
-    					emitter.send(SseEmitter.event().data(agg));
-    				} catch (Exception e) {
-    					// TODO Auto-generated catch block
-    					//e.printStackTrace();
-    					System.out.println(e.getMessage());
-    				}
-        		});
     			
     		} else {
     			System.out.println("Se ha recibido un objeto vacío en Kafka Consumer");
