@@ -1,7 +1,7 @@
 package com.stockapp.main.utils;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,7 @@ public class EmitterTickerContainer {
 	/**
 	 * Contendra los listados con los EmitterTickers
 	 */
-	private final Map<String,EmitterTicker> almacen = new HashMap<String,EmitterTicker>();
+	private final Map<String,EmitterTicker> almacen = new ConcurrentHashMap<String,EmitterTicker>();
 	
 	public boolean isEmitterTicker(String key) {
 		return almacen.containsKey(key);

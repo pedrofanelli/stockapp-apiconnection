@@ -16,6 +16,10 @@ public class EmitterTickerManager {
 		return container.isEmitterTicker(ticker);
 	}
 	
+	public EmitterTicker getEmitterTicker(String ticker) {
+		return container.getEmitterTicker(ticker);
+	}
+	
 	public void createTickerDataContainer(String ticker) throws Exception {
 		try {
 			EmitterTicker newone = factory.createEmitterTicker(ticker);
