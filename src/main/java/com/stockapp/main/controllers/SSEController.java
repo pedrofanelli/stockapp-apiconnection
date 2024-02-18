@@ -56,7 +56,7 @@ public class SSEController {
         }
 	
 	@GetMapping("/livegraph/{ticker}")
-	public ResponseEntity<List<AggregatesResult>> graph(@PathVariable String ticker) {
+	public ResponseEntity<List<AggregatesResult>> graph(@PathVariable String ticker) throws Exception {
 		
 		logger.info("el tickkkkker: "+ticker);
 		
@@ -79,6 +79,9 @@ public class SSEController {
 			
 				
 			List<AggregatesResult> listado = Arrays.asList(response.getResults());
+			
+		
+			emitterManager.createTickerDataContainer(ticker);
 			
 			EmitterTicker emitterTicker = emitterManager.getEmitterTicker(ticker);
 			

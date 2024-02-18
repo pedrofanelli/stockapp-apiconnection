@@ -18,7 +18,7 @@ public class EmitterTicker {
 	
 	private final List<AggregatesResult> aggResultsArrBuilding = new CopyOnWriteArrayList<>();
 
-	private AtomicInteger elementIndex = new AtomicInteger(0);
+	private AtomicInteger elementIndex = new AtomicInteger(-1);
 	
 	public EmitterTicker(String ticker) {
 		this.tickerNameId = ticker;
