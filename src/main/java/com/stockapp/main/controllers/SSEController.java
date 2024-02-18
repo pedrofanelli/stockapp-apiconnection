@@ -21,6 +21,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.stockapp.main.DTOs.Aggregates;
 import com.stockapp.main.DTOs.AggregatesResult;
+import com.stockapp.main.utils.EmitterTicker;
+import com.stockapp.main.utils.EmitterTickerManager;
 import com.stockapp.main.utils.EmittersContainer;
 
 import reactor.core.publisher.Mono;
@@ -30,14 +32,11 @@ public class SSEController {
 
 	private static final Logger logger = LoggerFactory.getLogger(SSEController.class);
 	
-	@Autowired
-	EmittersContainer emittersContainer;
+	//@Autowired
+	//EmittersContainer emittersContainer;
 	
-	//private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
-	    
-    //private AtomicInteger intAtomico = new AtomicInteger(0);
-    
-    //private AggregatesResult[] arrResults;
+	@Autowired
+	EmitterTickerManager emitterManager;
 	
 	@Autowired
     WebClient webClient;
@@ -63,13 +62,13 @@ public class SSEController {
 		
 		List<AggregatesResult> lista = new ArrayList<>();
 		
-		if (emittersContainer.getAggResultsArr().isEmpty()) {
+		if (!emitterManager.isTickerAlreadyCreated(ticker)) {
 			
-			logger.info("array contenedor VACIO!!!");
+			//logger.info("array contenedor VACIO!!!");
 			
 			Aggregates response = webClient
 					.get()
-					.uri("/v2/aggs/ticker/AAPL/range/1/day/2023-01-25/2024-01-25?adjusted=true&sort=asc")
+					.uri("/v2/aggs/ticker/"+ticker+"/range/1/day/2023-01-25/2024-01-25?adjusted=true&sort=asc")
 					.retrieve()
                     .onStatus(status -> status.is4xxClientError(), clientResponse -> handleClientError(clientResponse))
                     .onStatus(status -> status.is5xxServerError(), serverResponse -> handleServerError(serverResponse))
@@ -81,15 +80,25 @@ public class SSEController {
 				
 			List<AggregatesResult> listado = Arrays.asList(response.getResults());
 			
-			emittersContainer.setAllAggResult(listado);
+			EmitterTicker emitterTicker = emitterManager.getEmitterTicker(ticker);
 			
-			lista.add(listado.get(0));
+			emitterTicker.setAllTotalArrAggResult(listado);
+			
+			//emittersContainer.setAllAggResult(listado);
+			
+			lista.add(listado.get(0)); //mando el primero
 							
 		} else {
 			
-			logger.info("array contenedor CON DATAAAA!!!");
+			//logger.info("array contenedor CON DATAAAA!!!");
 			
-			lista = emittersContainer.getAggresultsarrbuilding();
+			//lista = emittersContainer.getAggresultsarrbuilding();
+			
+			EmitterTicker emitterTicker = emitterManager.getEmitterTicker(ticker);
+			
+			for (int i=0;i<emitterTicker.getArrBuildingAggResultSize();i++) {
+				lista.add(emitterTicker.getArrBuildingAggResultItem(i));
+			}
 			
 		}
         
@@ -124,8 +133,8 @@ public class SSEController {
 	 * 
 	 * @return
 	 */
-	@GetMapping("/emitter")
-	SseEmitter getEmitter() {
+	@GetMapping("/emitter/{ticker}")
+	SseEmitter getEmitter(@PathVariable String ticker) {
 		
 		System.out.println("ADENTRO DE SSE!!!");
         System.out.println("TAMANIO DE ARRAY DE EMITERS: "+emittersContainer.getEmitters().size());
