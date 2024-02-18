@@ -22,4 +22,7 @@ public class EmitterTickerContainer {
 	public void setEmitterTicker(String key, EmitterTicker et) {
 		this.almacen.put(key, et);
 	}
+	public int getAlmacenSize() {
+		return almacen.size();
+	}
 }

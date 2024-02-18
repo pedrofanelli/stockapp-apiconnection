@@ -29,4 +29,8 @@ public class EmitterTickerManager {
 		}
 	}
 	
+	public boolean areAnyEmitterTicker() {
+		return container.getAlmacenSize() > 0;
+	}
+	
 }

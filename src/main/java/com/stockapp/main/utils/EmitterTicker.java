@@ -14,7 +14,7 @@ public class EmitterTicker {
 	
 	private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 	
-	private final List<AggregatesResult> aggResultsArr = new CopyOnWriteArrayList<>();
+	private final List<AggregatesResult> totalAggResultsArr = new CopyOnWriteArrayList<>();
 	
 	private final List<AggregatesResult> aggResultsArrBuilding = new CopyOnWriteArrayList<>();
 
@@ -46,14 +46,14 @@ public class EmitterTicker {
 		this.elementIndex.set(val);
 	}
 	
-	public int getArrAggResultSize() {
-		return this.aggResultsArr.size();
+	public int getTotalArrAggResultSize() {
+		return this.totalAggResultsArr.size();
 	}
-	public AggregatesResult getArrAggResultItem(int i) {
-		return aggResultsArr.get(i);
+	public AggregatesResult getTotalArrAggResultItem(int i) {
+		return totalAggResultsArr.get(i);
 	}
-	public void setAllArrAggResult(List<AggregatesResult> agg) {
-		aggResultsArr.addAll(agg);
+	public void setAllTotalArrAggResult(List<AggregatesResult> agg) {
+		totalAggResultsArr.addAll(agg);
 	}
 	
 	

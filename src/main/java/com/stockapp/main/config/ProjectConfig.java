@@ -31,6 +31,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.stockapp.main.DTOs.AggregatesResult;
+import com.stockapp.main.utils.EmitterTickerManager;
 import com.stockapp.main.utils.EmittersContainer;
 
 import io.netty.handler.ssl.SslContext;
@@ -44,8 +45,11 @@ public class ProjectConfig {
 	@Value("${apikey.value}")
 	private String apikey;
 	
+	//@Autowired
+	//private EmittersContainer emittersContainer;
+	
 	@Autowired
-	private EmittersContainer emittersContainer;
+	private EmitterTickerManager emitterManager;
 	
     @Bean
     WebClient createWebClient() throws SSLException {
@@ -73,6 +77,7 @@ public class ProjectConfig {
      * @return
      */
     
+    /*
     @Bean
 	Supplier<AggregatesResult> producerBinding() {
 		return () -> {
@@ -94,13 +99,38 @@ public class ProjectConfig {
 				} else {
 					return emptyData;
 				}
-			}
-			
-			
-			
+			}	
 			
 		};
 	}
+
+	*/
+    
+    @Bean
+	Supplier<AggregatesResult> producerBinding() {
+		return () -> {
+			
+			AggregatesResult emptyData = new AggregatesResult();
+			emptyData.setAllToEmpty();
+			if (emittersContainer.getAggResultsArr().isEmpty()) {
+				System.out.println("ES NULL EL CONTENIDO, ENVIO NULL");
+				
+				return emptyData;
+			} else {
+				System.out.println("NO ES NULL");
+				int index = emittersContainer.getIntAtomico().incrementAndGet();
+				if (index < emittersContainer.getAggResultsArr().size()) {
+					AggregatesResult data = emittersContainer.getAggResults(index);
+					emittersContainer.setAggresultsarrbuilding(data);
+					return data;
+				} else {
+					return emptyData;
+				}
+			}	
+			
+		};
+	}
+    
 
     @Bean
     Consumer<AggregatesResult> consumerBinding() {
