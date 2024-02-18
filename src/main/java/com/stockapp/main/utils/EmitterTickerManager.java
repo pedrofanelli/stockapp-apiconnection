@@ -33,4 +33,12 @@ public class EmitterTickerManager {
 		return container.getAlmacenSize() > 0;
 	}
 	
+	public void loopAndAddNewItemData() throws Exception {
+		if (container.getAlmacenSize() > 0) {
+			
+		} else {
+			throw new Exception ("No hay datos para loopear :(");
+		}
+	}
+	
 }

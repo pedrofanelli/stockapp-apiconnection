@@ -31,6 +31,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.stockapp.main.DTOs.AggregatesResult;
+import com.stockapp.main.DTOs.ForKafka;
 import com.stockapp.main.utils.EmitterTickerManager;
 import com.stockapp.main.utils.EmittersContainer;
 
@@ -107,17 +108,14 @@ public class ProjectConfig {
 	*/
     
     @Bean
-	Supplier<AggregatesResult> producerBinding() {
+	Supplier<ForKafka> producerBinding() {
 		return () -> {
 			
-			AggregatesResult emptyData = new AggregatesResult();
-			emptyData.setAllToEmpty();
-			if (emittersContainer.getAggResultsArr().isEmpty()) {
-				System.out.println("ES NULL EL CONTENIDO, ENVIO NULL");
-				
+			ForKafka emptyData = new ForKafka();
+			if (!emitterManager.areAnyEmitterTicker()) {				
 				return emptyData;
 			} else {
-				System.out.println("NO ES NULL");
+				emitterManager.loopAndAddNewItemData();
 				int index = emittersContainer.getIntAtomico().incrementAndGet();
 				if (index < emittersContainer.getAggResultsArr().size()) {
 					AggregatesResult data = emittersContainer.getAggResults(index);
