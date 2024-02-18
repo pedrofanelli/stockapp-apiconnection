@@ -18,7 +18,7 @@ public class EmitterTicker {
 	
 	private final List<AggregatesResult> aggResultsArrBuilding = new CopyOnWriteArrayList<>();
 
-	private AtomicInteger elementIndex = new AtomicInteger(-1);
+	private AtomicInteger elementIndex = new AtomicInteger(0);
 	
 	public EmitterTicker(String ticker) {
 		this.tickerNameId = ticker;
@@ -39,8 +39,8 @@ public class EmitterTicker {
 		}
 		return this.emitters.get(i);
 	}
-	public int getElementIndex() {
-		return this.elementIndex.get();
+	public int getAndIncrementElementIndex() {
+		return this.elementIndex.incrementAndGet();
 	}
 	public void setIntAtomico(int val) {
 		this.elementIndex.set(val);

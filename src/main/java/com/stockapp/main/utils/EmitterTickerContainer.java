@@ -1,6 +1,7 @@
 package com.stockapp.main.utils;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Component;
@@ -25,4 +26,7 @@ public class EmitterTickerContainer {
 	public int getAlmacenSize() {
 		return almacen.size();
 	}
+	public Set<String> keySet() {
+        return almacen.keySet();
+    }
 }

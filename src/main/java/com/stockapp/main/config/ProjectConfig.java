@@ -111,25 +111,25 @@ public class ProjectConfig {
 	Supplier<ForKafka> producerBinding() {
 		return () -> {
 			
-			ForKafka emptyData = new ForKafka();
-			if (!emitterManager.areAnyEmitterTicker()) {				
-				return emptyData;
-			} else {
-				emitterManager.loopAndAddNewItemData();
-				int index = emittersContainer.getIntAtomico().incrementAndGet();
-				if (index < emittersContainer.getAggResultsArr().size()) {
-					AggregatesResult data = emittersContainer.getAggResults(index);
-					emittersContainer.setAggresultsarrbuilding(data);
-					return data;
-				} else {
+			try {
+			
+				ForKafka emptyData = new ForKafka();
+				if (!emitterManager.areAnyEmitterTicker()) {				
 					return emptyData;
-				}
-			}	
+				} else {
+					ForKafka data = emitterManager.loopAndAddNewItemData();
+					return data;
+				}	
+			
+			} catch (Exception e) {
+				System.out.println("Ha ocurrido un error en Kafka Producer: "+e.getMessage());
+			}
 			
 		};
 	}
     
-
+    /*
+    
     @Bean
     Consumer<AggregatesResult> consumerBinding() {
 		//return s -> System.out.println("Data Consumed :: " + s);
@@ -152,10 +152,36 @@ public class ProjectConfig {
     			System.out.println("es null en consumerrrrr");
     		}
     		
+    	};
+	}
+    
+    */
+    
+    
+    @Bean
+    Consumer<AggregatesResult> consumerBinding() {
+		//return s -> System.out.println("Data Consumed :: " + s);
+    	
+    	return agg -> {
     		
+    		if (agg != null && !agg.isAllEmpty()) {
+    			System.out.println("ES DISTINTO DE NULL EN CONSUMERRRRR");
+    			emittersContainer.getEmitters().forEach(emitter -> {
+        			try {
+    					emitter.send(SseEmitter.event().data(agg));
+    				} catch (Exception e) {
+    					// TODO Auto-generated catch block
+    					//e.printStackTrace();
+    					System.out.println(e.getMessage());
+    				}
+        		});
+    			
+    		} else {
+    			System.out.println("es null en consumerrrrr");
+    		}
     		
     	};
-    	
 	}
+    
     
 }
