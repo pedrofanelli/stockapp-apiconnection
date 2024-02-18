@@ -136,27 +136,31 @@ public class SSEController {
 	@GetMapping("/emitter/{ticker}")
 	SseEmitter getEmitter(@PathVariable String ticker) {
 		
-		System.out.println("ADENTRO DE SSE!!!");
-        System.out.println("TAMANIO DE ARRAY DE EMITERS: "+emittersContainer.getEmitters().size());
+		//System.out.println("ADENTRO DE SSE!!!");
+        //System.out.println("TAMANIO DE ARRAY DE EMITERS: "+emittersContainer.getEmitters().size());
 		
 		SseEmitter emitter = new SseEmitter(-1L);
         
         
         // Add the emitter to the list for tracking
-        emittersContainer.setEmitter(emitter);
+        //emittersContainer.setEmitter(emitter);
+		
+		EmitterTicker emitterTicker = emitterManager.getEmitterTicker(ticker);
+		emitterTicker.setEmitter(emitter);
+		
 
         // Set a timeout handler for the emitter
         emitter.onTimeout(() -> {
             // Remove the emitter from the list when the connection times out
             System.out.println("TIMEOUT DE EMITTER");
-            emittersContainer.removeEmitter(emitter);
+            emitterTicker.removeEmitter(emitter);
         });
 
         // Set a completion handler for the emitter
         emitter.onCompletion(() -> {
             // Remove the emitter from the list when the connection is completed
             System.out.println("COMPLETION DEL EMITTER");
-            emittersContainer.removeEmitter(emitter);
+            emitterTicker.removeEmitter(emitter);
         });
 
         // Logic to manage the connection and send events
