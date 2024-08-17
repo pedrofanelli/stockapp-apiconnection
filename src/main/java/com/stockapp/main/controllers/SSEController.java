@@ -137,39 +137,79 @@ public class SSEController {
 	 * @return
 	 */
 	@GetMapping("/emitter/{ticker}")
-	SseEmitter getEmitter(@PathVariable String ticker) {
-		
-		//System.out.println("ADENTRO DE SSE!!!");
-        //System.out.println("TAMANIO DE ARRAY DE EMITERS: "+emittersContainer.getEmitters().size());
-		
+	SseEmitter getEmitter(@PathVariable String ticker) throws Exception {
+				
 		SseEmitter emitter = new SseEmitter(-1L);
         
+        /**
+         * Para manejar casos en que la app ya esta abierta, con datos, pierde conexion, y reintentara acá
+         * Pero no habrá ningun emitter manager...
+         * 
+         */
         
-        // Add the emitter to the list for tracking
-        //emittersContainer.setEmitter(emitter);
+		if (!emitterManager.isTickerAlreadyCreated(ticker)) {
+			
+			Aggregates response = webClient
+					.get()
+					.uri("/v2/aggs/ticker/"+ticker+"/range/1/day/2023-01-25/2024-01-25?adjusted=true&sort=asc")
+					.retrieve()
+                    .onStatus(status -> status.is4xxClientError(), clientResponse -> handleClientError(clientResponse))
+                    .onStatus(status -> status.is5xxServerError(), serverResponse -> handleServerError(serverResponse))
+                    //.onStatus(HttpStatus::isError, clientResponse -> handleAnyError(clientResponse))
+                    .bodyToMono(Aggregates.class) //throws JsonProcessingException si pifiamos en el procesamiento en mi DTO
+                    .block();
+			
+			
+				
+			List<AggregatesResult> listado = Arrays.asList(response.getResults());
+			
 		
-		EmitterTicker emitterTicker = emitterManager.getEmitterTicker(ticker);
-		emitterTicker.setEmitter(emitter);
+			emitterManager.createTickerDataContainer(ticker);
+			
+			EmitterTicker emitterTicker = emitterManager.getEmitterTicker(ticker);
+			
+			emitterTicker.setAllTotalArrAggResult(listado);
+			
+			emitterTicker.setEmitter(emitter);
+			
+			// Set a timeout handler for the emitter
+	        emitter.onTimeout(() -> {
+	            // Remove the emitter from the list when the connection times out
+	            System.out.println("TIMEOUT DE EMITTER");
+	            emitterTicker.removeEmitter(emitter);
+	        });
+	
+	        // Set a completion handler for the emitter
+	        emitter.onCompletion(() -> {
+	            // Remove the emitter from the list when the connection is completed
+	            System.out.println("COMPLETION DEL EMITTER");
+	            emitterTicker.removeEmitter(emitter);
+	        });
+						
+		} else {
 		
-
-        // Set a timeout handler for the emitter
-        emitter.onTimeout(() -> {
-            // Remove the emitter from the list when the connection times out
-            System.out.println("TIMEOUT DE EMITTER");
-            emitterTicker.removeEmitter(emitter);
-        });
-
-        // Set a completion handler for the emitter
-        emitter.onCompletion(() -> {
-            // Remove the emitter from the list when the connection is completed
-            System.out.println("COMPLETION DEL EMITTER");
-            emitterTicker.removeEmitter(emitter);
-        });
-
-        // Logic to manage the connection and send events
-        //sendEventsInBackground(emitter);
+			EmitterTicker emitterTicker = emitterManager.getEmitterTicker(ticker);
+			emitterTicker.setEmitter(emitter);
+		
+		
+		
+	        // Set a timeout handler for the emitter
+	        emitter.onTimeout(() -> {
+	            // Remove the emitter from the list when the connection times out
+	            System.out.println("TIMEOUT DE EMITTER");
+	            emitterTicker.removeEmitter(emitter);
+	        });
+	
+	        // Set a completion handler for the emitter
+	        emitter.onCompletion(() -> {
+	            // Remove the emitter from the list when the connection is completed
+	            System.out.println("COMPLETION DEL EMITTER");
+	            emitterTicker.removeEmitter(emitter);
+	        });
 
         
+		}
+		
         return emitter;
 		
 	}
